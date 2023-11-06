@@ -5,8 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-import java.sql.Date;
-import java.sql.Time;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "partida")
@@ -24,9 +23,7 @@ public class Partida {
     @Column
     private int golsTimeVisitante;
     @Column
-    private Date dataDaPartida;
-    @Column
-    private Time horaDaPartida;
+    private Timestamp dataDaPartida;
     @Column
     private String estadioDaPartida;
 
@@ -70,20 +67,12 @@ public class Partida {
         this.golsTimeVisitante = golsTimeVisitante;
     }
 
-    public Date getDataDaPartida() {
+    public Timestamp getDataDaPartida() {
         return dataDaPartida;
     }
 
-    public void setDataDaPartida(Date dataDaPartida) {
+    public void setDataDaPartida(Timestamp dataDaPartida) {
         this.dataDaPartida = dataDaPartida;
-    }
-
-    public Time getHoraDaPartida() {
-        return horaDaPartida;
-    }
-
-    public void setHoraDaPartida(Time horaDaPartida) {
-        this.horaDaPartida = horaDaPartida;
     }
 
     public String getEstadioDaPartida() {

@@ -1,10 +1,6 @@
 package br.com.joaosarmento.listadepartidasapi.DTOs;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
-
-import java.sql.Date;
-import java.sql.Time;
+import java.sql.Timestamp;
 
 public class PartidaDTO {
 
@@ -13,8 +9,7 @@ public class PartidaDTO {
     private String clubeVisitante;
     private int golsTimeCasa;
     private int golsTimeVisitante;
-    private Date dataDaPartida;
-    private Time horaDaPartida;
+    private Timestamp dataDaPartida;
     private String estadioDaPartida;
 
     public long getId() {
@@ -57,20 +52,12 @@ public class PartidaDTO {
         this.golsTimeVisitante = golsTimeVisitante;
     }
 
-    public Date getDataDaPartida() {
+    public Timestamp getDataDaPartida() {
         return dataDaPartida;
     }
 
-    public void setDataDaPartida(Date dataDaPartida) {
+    public void setDataDaPartida(Timestamp dataDaPartida) {
         this.dataDaPartida = dataDaPartida;
-    }
-
-    public Time getHoraDaPartida() {
-        return horaDaPartida;
-    }
-
-    public void setHoraDaPartida(Time horaDaPartida) {
-        this.horaDaPartida = horaDaPartida;
     }
 
     public String getEstadioDaPartida() {

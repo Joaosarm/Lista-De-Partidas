@@ -20,7 +20,6 @@ public class PartidaService {
         partida.setGolsTimeCasa(partidaDto.getGolsTimeCasa());
         partida.setGolsTimeVisitante(partidaDto.getGolsTimeVisitante());
         partida.setDataDaPartida(partidaDto.getDataDaPartida());
-        partida.setHoraDaPartida(partidaDto.getHoraDaPartida());
         partida.setEstadioDaPartida(partidaDto.getEstadioDaPartida());
 
         partidaRepository.save(partida);
