@@ -2,9 +2,14 @@ package br.com.joaosarmento.listadepartidasapi.services;
 
 import br.com.joaosarmento.listadepartidasapi.DTOs.PartidaDTO;
 import br.com.joaosarmento.listadepartidasapi.models.Partida;
+import br.com.joaosarmento.listadepartidasapi.models.UpdateForm;
 import br.com.joaosarmento.listadepartidasapi.repositories.PartidaRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PartidaService {
@@ -24,4 +29,40 @@ public class PartidaService {
 
         partidaRepository.save(partida);
     }
+
+    public List<Partida> getTodasAsPartidas(){
+        return partidaRepository.findAll();
+    }
+
+    public Optional<Partida> getUmaPartida(Long id){
+        return partidaRepository.findById(id);
+    }
+
+    public String updatePartida(Long id, UpdateForm form){
+
+        try {
+            Partida partida = partidaRepository.getReferenceById(id);
+
+            if(partida.getClubeCasa() != null) {
+                partida.setClubeCasa(form.getClubeCasa());
+                partida.setClubeVisitante(form.getClubeVisitante());
+                partida.setGolsTimeCasa(form.getGolsTimeCasa());
+                partida.setGolsTimeVisitante(form.getGolsTimeVisitante());
+                partida.setDataDaPartida(form.getDataDaPartida());
+                partida.setEstadioDaPartida(form.getEstadioDaPartida());
+
+                partidaRepository.save(partida);
+            }
+        } catch(EntityNotFoundException e){
+            return "Partida não encontrado!";
+        }
+
+        return "Atualizado!";
+    }
+
+    public void deletePartida(Long id){
+        partidaRepository.deleteById(id);
+    }
+
+
 }
