@@ -1,13 +1,13 @@
-package br.com.joaosarmento.listadepartidasapi.models;
+package br.com.joaosarmento.listadepartidasapi.DTOs;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
-public class UpdateForm {
+public class UpdateFormDTO {
     private String clubeCasa;
     private String clubeVisitante;
     private int golsTimeCasa;
     private int golsTimeVisitante;
-    private Timestamp dataDaPartida;
+    private LocalDateTime dataDaPartida;
     private String estadioDaPartida;
 
     public String getClubeCasa() {
@@ -42,11 +42,11 @@ public class UpdateForm {
         this.golsTimeVisitante = golsTimeVisitante;
     }
 
-    public Timestamp getDataDaPartida() {
+    public LocalDateTime getDataDaPartida() {
         return dataDaPartida;
     }
 
-    public void setDataDaPartida(Timestamp dataDaPartida) {
+    public void setDataDaPartida(LocalDateTime dataDaPartida) {
         this.dataDaPartida = dataDaPartida;
     }
 
