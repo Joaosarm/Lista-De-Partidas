@@ -4,6 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
@@ -12,18 +14,25 @@ import java.time.LocalDateTime;
 public class Partida {
 
     @Id
+    @NotNull
     @Column
     private long id;
+    @NotBlank
     @Column
     private String clubeCasa;
+    @NotBlank
     @Column
     private String clubeVisitante;
+    @NotNull
     @Column
     private int golsTimeCasa;
+    @NotNull
     @Column
     private int golsTimeVisitante;
+    @NotNull
     @Column
     private LocalDateTime dataDaPartida;
+    @NotBlank
     @Column
     private String estadioDaPartida;
 
