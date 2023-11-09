@@ -77,18 +77,11 @@ public class PartidaService {
     }
 
     public String updatePartida(Long id, UpdateFormDTO form){
-        if(partidaRepository.existsById(id)){}
+        if(!partidaRepository.existsById(id)){return "Partida não encontrado!";}
 
-        Partida partida = partidaRepository.getReferenceById(id);
-        try {
-
-            if(partida.getClubeCasa() != null) {
-                partidaRepository.save(modelMapper.map(form,Partida.class));
-            }
-
-        } catch(EntityNotFoundException e){
-            return "Partida não encontrado!";
-        }
+        Partida partida = modelMapper.map(form,Partida.class);
+        partida.setId(id);
+        partidaRepository.save(partida);
 
         return "Atualizado!";
     }
