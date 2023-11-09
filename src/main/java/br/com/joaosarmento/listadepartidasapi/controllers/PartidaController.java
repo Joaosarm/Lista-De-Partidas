@@ -35,9 +35,7 @@ public class PartidaController {
     }
 
     @GetMapping("/estadio")
-    public List<Partida> getPartidaPorEstadio(@RequestBody EstadioDTO estadioDaPartida){
-        return partidaService.getPartidaPorEstadio(estadioDaPartida);
-    }
+    public List<Partida> getPartidaPorEstadio(@RequestBody EstadioDTO estadioDaPartida){ return partidaService.getPartidaPorEstadio(estadioDaPartida); }
 
     @GetMapping("/partidas-com-goleadas")
     public List<Partida> getPartidasComGoleadas(){
@@ -50,24 +48,16 @@ public class PartidaController {
     }
 
     @GetMapping("/partidas-por-clube")
-    public List<Partida> getPartidasComClube(@RequestBody ClubeDTO clubeDTO){
-        return partidaService.getPartidasComClube(clubeDTO);
-    }
+    public List<Partida> getPartidasComClube(@RequestBody ClubeDTO clubeDTO){ return partidaService.getPartidasComClube(clubeDTO); }
 
     @GetMapping("/partidas-por-clube-casa")
-    public List<Partida> getPartidasComClubeCasa(@RequestBody ClubeDTO clubeDTOCasa){
-        return partidaService.getPartidasComClubeCasa(clubeDTOCasa);
-    }
+    public List<Partida> getPartidasComClubeCasa(@RequestBody ClubeDTO clubeDTOCasa){ return partidaService.getPartidasComClubeCasa(clubeDTOCasa); }
 
     @GetMapping("/partidas-por-clube-visitante")
-    public List<Partida> getPartidasComClubeVisitante(@RequestBody ClubeDTO clubeDTOVisitante){
-        return partidaService.getPartidasComClubeVisitante(clubeDTOVisitante);
-    }
+    public List<Partida> getPartidasComClubeVisitante(@RequestBody ClubeDTO clubeDTOVisitante){ return partidaService.getPartidasComClubeVisitante(clubeDTOVisitante); }
 
     @PutMapping("/{id}")
-    public String updatePartida(@PathVariable Long id, @RequestBody UpdateFormDTO form){
-        return partidaService.updatePartida(id, form);
-    }
+    public String updatePartida(@PathVariable Long id, @RequestBody UpdateFormDTO form){ return partidaService.updatePartida(id, form); }
 
     @DeleteMapping("/{id}")
     public void deletePartida(@PathVariable Long id){
