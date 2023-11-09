@@ -1,15 +1,25 @@
 package br.com.joaosarmento.listadepartidasapi.DTOs;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+
 import java.time.LocalDateTime;
 
 public class PartidaDTO {
 
     private long id;
+    @NotBlank(message = "clubeCasa não pode estar em branco!")
     private String clubeCasa;
+    @NotBlank(message = "clubeVisitante não pode estar em branco")
     private String clubeVisitante;
+    @PositiveOrZero(message = "golsTimeCasa não pode ser nulo")
     private int golsTimeCasa;
+    @PositiveOrZero(message = "golsTimeVisitante não pode ser nulo")
     private int golsTimeVisitante;
+    @NotNull(message = "dataDaPartida não pode estar em branco")
     private LocalDateTime dataDaPartida;
+    @NotBlank(message = "estadioDaPartida não pode estar em branco")
     private String estadioDaPartida;
 
     public long getId() {
