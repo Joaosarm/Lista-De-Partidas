@@ -78,6 +78,7 @@ public class PartidaService {
 
     public String updatePartida(Long id, UpdateFormDTO form){
         if(partidaRepository.existsById(id)){}
+
         Partida partida = partidaRepository.getReferenceById(id);
         try {
 
