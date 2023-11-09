@@ -6,14 +6,12 @@ import br.com.joaosarmento.listadepartidasapi.DTOs.EstadioDTO;
 import br.com.joaosarmento.listadepartidasapi.models.Partida;
 import br.com.joaosarmento.listadepartidasapi.DTOs.UpdateFormDTO;
 import br.com.joaosarmento.listadepartidasapi.repositories.PartidaRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -42,26 +40,20 @@ public class PartidaService {
     }
 
     public List<Partida> getPartidasComGoleadas(){
-        List<Partida> partidas = getTodasAsPartidas();
-        List<Partida> partidasComGoleada = new ArrayList<>();
-
-        for(int i=0; i<partidas.size(); i++){
-            int diferencaDeGols = partidas.get(i).getGolsTimeCasa() - partidas.get(i).getGolsTimeVisitante();
-            if(diferencaDeGols>=3||diferencaDeGols<=-3) partidasComGoleada.add(partidas.get(i));
-        }
-
-        return partidasComGoleada;
+        return getTodasAsPartidas()
+                .stream()
+                .filter(partida -> {
+                    int diferencaDeGols = partida.getGolsTimeCasa() - partida.getGolsTimeVisitante();
+                    return diferencaDeGols>=3||diferencaDeGols<=-3;
+                })
+                .toList();
     }
 
     public List<Partida> getPartidasSemGols(){
-        List<Partida> partidas = getTodasAsPartidas();
-        List<Partida> partidasSemGols = new ArrayList<>();
-
-        for(int i=0; i<partidas.size(); i++){
-            if(partidas.get(i).getGolsTimeCasa()==0&&partidas.get(i).getGolsTimeVisitante()==0) partidasSemGols.add(partidas.get(i));
-        }
-
-        return partidasSemGols;
+        return getTodasAsPartidas()
+                .stream()
+                .filter(partida -> partida.getGolsTimeCasa()==0&&partida.getGolsTimeVisitante()==0)
+                .toList();
     }
 
     public List<Partida> getPartidasComClube(ClubeDTO clubeDTO){
@@ -77,17 +69,11 @@ public class PartidaService {
     }
 
     public String updatePartida(Long id, UpdateFormDTO form){
-        if(partidaRepository.existsById(id)){}
-        Partida partida = partidaRepository.getReferenceById(id);
-        try {
+        if(!partidaRepository.existsById(id)){return "Partida não encontrado!";}
 
-            if(partida.getClubeCasa() != null) {
-                partidaRepository.save(modelMapper.map(form,Partida.class));
-            }
-
-        } catch(EntityNotFoundException e){
-            return "Partida não encontrado!";
-        }
+        Partida partida = modelMapper.map(form,Partida.class);
+        partida.setId(id);
+        partidaRepository.save(partida);
 
         return "Atualizado!";
     }
