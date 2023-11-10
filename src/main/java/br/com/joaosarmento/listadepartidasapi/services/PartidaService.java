@@ -10,6 +10,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,8 +24,19 @@ public class PartidaService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public void postPartida(PartidaDTO partidaDto){
+    public boolean validateHorarioPartida(LocalDateTime dataDaPartida){
+        LocalTime horaMinima = LocalTime.parse( "08:00:00" );
+        LocalTime horaMaxima = LocalTime.parse( "22:00:00" );
+        LocalTime horaDaPartida = dataDaPartida.toLocalTime();
+
+        return horaDaPartida.isBefore(horaMinima) || horaDaPartida.isAfter(horaMaxima);
+    }
+
+    public String postPartida(PartidaDTO partidaDto){
+        if(validateHorarioPartida(partidaDto.getDataDaPartida())) return "Horário Inválido!";
+
         partidaRepository.save(modelMapper.map(partidaDto, Partida.class));
+        return "Partida Inserida! ";
     }
 
     public List<Partida> getTodasAsPartidas(){
@@ -43,7 +56,7 @@ public class PartidaService {
                 .stream()
                 .filter(partida -> {
                     int diferencaDeGols = partida.getGolsTimeCasa() - partida.getGolsTimeVisitante();
-                    return diferencaDeGols>=3||diferencaDeGols<=-3;
+                    return diferencaDeGols>=3 || diferencaDeGols<=-3;
                 })
                 .toList();
     }
@@ -51,7 +64,7 @@ public class PartidaService {
     public List<Partida> getPartidasSemGols(){
         return getTodasAsPartidas()
                 .stream()
-                .filter(partida -> partida.getGolsTimeCasa()==0&&partida.getGolsTimeVisitante()==0)
+                .filter(partida -> partida.getGolsTimeCasa()==0 && partida.getGolsTimeVisitante()==0)
                 .toList();
     }
 

@@ -21,8 +21,8 @@ public class PartidaController {
     private PartidaService partidaService;
 
     @PostMapping
-    public void postPartida(@Valid @RequestBody PartidaDTO partidaDTO){
-        partidaService.postPartida(partidaDTO);
+    public String postPartida(@Valid @RequestBody PartidaDTO partidaDTO){
+        return partidaService.postPartida(partidaDTO);
     }
 
     @GetMapping
