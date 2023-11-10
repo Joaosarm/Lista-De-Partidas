@@ -32,8 +32,17 @@ public class PartidaService {
         return horaDaPartida.isBefore(horaMinima) || horaDaPartida.isAfter(horaMaxima);
     }
 
+    public boolean validateEstadioNoDia(String nomeDoEstadio, LocalDateTime DataDaPartida){
+        return getPartidaPorEstadio(nomeDoEstadio).stream().anyMatch(partida ->
+            partida.getDataDaPartida().toLocalDate().isEqual(DataDaPartida.toLocalDate())
+        );
+    }
+
     public String postPartida(PartidaDTO partidaDto){
-        if(validateHorarioPartida(partidaDto.getDataDaPartida())) return "Horário Inválido!";
+        if(validateHorarioPartida(partidaDto.getDataDaPartida()))
+            return "Horário Inválido!";
+        if(validateEstadioNoDia(partidaDto.getEstadioDaPartida(), partidaDto.getDataDaPartida()))
+            return "Jogo já existente para essa data nesse estádio!";
 
         partidaRepository.save(modelMapper.map(partidaDto, Partida.class));
         return "Partida Inserida! ";
@@ -47,8 +56,8 @@ public class PartidaService {
         return partidaRepository.findById(id);
     }
 
-    public List<Partida> getPartidaPorEstadio(EstadioDTO estadioDaPartida){
-        return partidaRepository.findByEstadioDaPartida(estadioDaPartida.getEstadioDaPartida());
+    public List<Partida> getPartidaPorEstadio(String nomeDoEstadio){
+        return partidaRepository.findByEstadioDaPartida(nomeDoEstadio);
     }
 
     public List<Partida> getPartidasComGoleadas(){
@@ -82,6 +91,7 @@ public class PartidaService {
 
     public String updatePartida(Long id, UpdateFormDTO form){
         if(!partidaRepository.existsById(id)){return "Partida não encontrado!";}
+        if(validateHorarioPartida(form.getDataDaPartida())) return "Horário Inválido!";
 
         Partida partida = modelMapper.map(form,Partida.class);
         partida.setId(id);

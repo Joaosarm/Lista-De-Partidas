@@ -36,7 +36,7 @@ public class PartidaController {
     }
 
     @GetMapping("/estadio")
-    public List<Partida> getPartidaPorEstadio(@RequestBody EstadioDTO estadioDaPartida){ return partidaService.getPartidaPorEstadio(estadioDaPartida); }
+    public List<Partida> getPartidaPorEstadio(@RequestBody EstadioDTO estadioDaPartida){ return partidaService.getPartidaPorEstadio(estadioDaPartida.getEstadioDaPartida()); }
 
     @GetMapping("/partidas-com-goleadas")
     public List<Partida> getPartidasComGoleadas(){
