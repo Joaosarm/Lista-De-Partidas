@@ -2,7 +2,6 @@ package br.com.joaosarmento.listadepartidasapi.services;
 
 import br.com.joaosarmento.listadepartidasapi.DTOs.PartidaDTO;
 import br.com.joaosarmento.listadepartidasapi.DTOs.ClubeDTO;
-import br.com.joaosarmento.listadepartidasapi.DTOs.EstadioDTO;
 import br.com.joaosarmento.listadepartidasapi.models.Partida;
 import br.com.joaosarmento.listadepartidasapi.DTOs.UpdateFormDTO;
 import br.com.joaosarmento.listadepartidasapi.repositories.PartidaRepository;
@@ -38,11 +37,28 @@ public class PartidaService {
         );
     }
 
-    public String postPartida(PartidaDTO partidaDto){
-        if(validateHorarioPartida(partidaDto.getDataDaPartida()))
+    public boolean validateClubePorIntervaloDeTempo(LocalDateTime dataDaPartida, String clube){
+        if(partidaRepository.checkClubeporDia(dataDaPartida,clube) > 0) return true;
+        return false;
+    }
+
+    public String postAndPutValidations(LocalDateTime dataDaPartida, String estadioDaPartida, String clubeCasa, String clubeVisitante){
+        if(validateHorarioPartida(dataDaPartida))
             return "Horário Inválido!";
-        if(validateEstadioNoDia(partidaDto.getEstadioDaPartida(), partidaDto.getDataDaPartida()))
+        if(validateEstadioNoDia(estadioDaPartida, dataDaPartida))
             return "Jogo já existente para essa data nesse estádio!";
+        if(validateClubePorIntervaloDeTempo(dataDaPartida, clubeCasa))
+            return "Clube da casa ja tem um jogo com menos de 2 dias de diferença!";
+        if(validateClubePorIntervaloDeTempo(dataDaPartida, clubeVisitante))
+            return "Clube visitante ja tem um jogo com menos de 2 dias de diferença!";
+
+        return "Validado";
+    }
+
+    public String postPartida(PartidaDTO partidaDto){
+        String valido = postAndPutValidations(partidaDto.getDataDaPartida(), partidaDto.getEstadioDaPartida(),
+                partidaDto.getClubeCasa(), partidaDto.getClubeVisitante());
+        if ( valido != "Validado") return valido;
 
         partidaRepository.save(modelMapper.map(partidaDto, Partida.class));
         return "Partida Inserida! ";
@@ -90,8 +106,11 @@ public class PartidaService {
     }
 
     public String updatePartida(Long id, UpdateFormDTO form){
-        if(!partidaRepository.existsById(id)){return "Partida não encontrado!";}
-        if(validateHorarioPartida(form.getDataDaPartida())) return "Horário Inválido!";
+        String valido = postAndPutValidations(form.getDataDaPartida(), form.getEstadioDaPartida(),
+                form.getClubeCasa(), form.getClubeVisitante());
+
+        if(!partidaRepository.existsById(id)) return "Partida não encontrado!";
+        if ( valido != "Validado") return valido;
 
         Partida partida = modelMapper.map(form,Partida.class);
         partida.setId(id);
