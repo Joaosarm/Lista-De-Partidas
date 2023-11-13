@@ -4,7 +4,6 @@ import br.com.joaosarmento.listadepartidasapi.DTOs.PartidaDTO;
 import br.com.joaosarmento.listadepartidasapi.DTOs.ClubeDTO;
 import br.com.joaosarmento.listadepartidasapi.DTOs.EstadioDTO;
 import br.com.joaosarmento.listadepartidasapi.models.Partida;
-import br.com.joaosarmento.listadepartidasapi.DTOs.UpdateFormDTO;
 import br.com.joaosarmento.listadepartidasapi.services.PartidaService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +57,7 @@ public class PartidaController {
     public List<Partida> getPartidasComClubeVisitante(@RequestBody ClubeDTO clubeDTOVisitante){ return partidaService.getPartidasComClubeVisitante(clubeDTOVisitante); }
 
     @PutMapping("/{id}")
-    public String updatePartida(@PathVariable Long id, @Valid @RequestBody UpdateFormDTO form){ return partidaService.updatePartida(id, form); }
+    public String updatePartida(@PathVariable Long id, @Valid @RequestBody PartidaDTO partidaDTO){ return partidaService.updatePartida(id, partidaDTO); }
 
     @DeleteMapping("/{id}")
     public void deletePartida(@PathVariable Long id){

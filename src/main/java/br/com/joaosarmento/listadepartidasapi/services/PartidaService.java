@@ -3,7 +3,6 @@ package br.com.joaosarmento.listadepartidasapi.services;
 import br.com.joaosarmento.listadepartidasapi.DTOs.PartidaDTO;
 import br.com.joaosarmento.listadepartidasapi.DTOs.ClubeDTO;
 import br.com.joaosarmento.listadepartidasapi.models.Partida;
-import br.com.joaosarmento.listadepartidasapi.DTOs.UpdateFormDTO;
 import br.com.joaosarmento.listadepartidasapi.repositories.PartidaRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,26 +40,26 @@ public class PartidaService {
         return partidaRepository.checkClubeporDia(dataDaPartida,clube);
     }
 
-    public String postAndPutValidations(LocalDateTime dataDaPartida, String estadioDaPartida, String clubeCasa, String clubeVisitante){
-        if(validateHorarioPartida(dataDaPartida))
+    public String postAndPutValidations(PartidaDTO partidaDTO){
+        if(validateHorarioPartida(partidaDTO.getDataDaPartida()))
             return "Horário Inválido!";
-        if(validateEstadioNoDia(estadioDaPartida, dataDaPartida))
+        if(validateEstadioNoDia(partidaDTO.getEstadioDaPartida(), partidaDTO.getDataDaPartida()))
             return "Jogo já existente para essa data nesse estádio!";
-        if(validateClubePorIntervaloDeTempo(dataDaPartida, clubeCasa))
+        if(validateClubePorIntervaloDeTempo(partidaDTO.getDataDaPartida(), partidaDTO.getClubeCasa()))
             return "Clube da casa ja tem um jogo com menos de 2 dias de diferença!";
-        if(validateClubePorIntervaloDeTempo(dataDaPartida, clubeVisitante))
+        if(validateClubePorIntervaloDeTempo(partidaDTO.getDataDaPartida(), partidaDTO.getClubeVisitante()))
             return "Clube visitante ja tem um jogo com menos de 2 dias de diferença!";
 
         return "Validado";
     }
 
     public String postPartida(PartidaDTO partidaDto){
-        String valido = postAndPutValidations(partidaDto.getDataDaPartida(), partidaDto.getEstadioDaPartida(),
-                partidaDto.getClubeCasa(), partidaDto.getClubeVisitante());
+        String valido = postAndPutValidations(partidaDto);
+
         if ( valido != "Validado") return valido;
 
         partidaRepository.save(modelMapper.map(partidaDto, Partida.class));
-        return "Partida Inserida! ";
+        return "Partida Inserida!";
     }
 
     public List<Partida> getTodasAsPartidas(){
@@ -104,14 +103,13 @@ public class PartidaService {
         return partidaRepository.findByClubeVisitante(clubeDTOVisitante.getClube());
     }
 
-    public String updatePartida(Long id, UpdateFormDTO form){
-        String valido = postAndPutValidations(form.getDataDaPartida(), form.getEstadioDaPartida(),
-                form.getClubeCasa(), form.getClubeVisitante());
+    public String updatePartida(Long id, PartidaDTO partidaDTO){
+        String valido = postAndPutValidations(partidaDTO);
 
         if(!partidaRepository.existsById(id)) return "Partida não encontrado!";
         if ( valido != "Validado") return valido;
 
-        Partida partida = modelMapper.map(form,Partida.class);
+        Partida partida = modelMapper.map(partidaDTO, Partida.class);
         partida.setId(id);
         partidaRepository.save(partida);
 
