@@ -38,8 +38,7 @@ public class PartidaService {
     }
 
     public boolean validateClubePorIntervaloDeTempo(LocalDateTime dataDaPartida, String clube){
-        if(partidaRepository.checkClubeporDia(dataDaPartida,clube) > 0) return true;
-        return false;
+        return partidaRepository.checkClubeporDia(dataDaPartida,clube);
     }
 
     public String postAndPutValidations(LocalDateTime dataDaPartida, String estadioDaPartida, String clubeCasa, String clubeVisitante){

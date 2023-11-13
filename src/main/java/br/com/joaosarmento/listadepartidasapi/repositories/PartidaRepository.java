@@ -13,9 +13,9 @@ public interface PartidaRepository extends JpaRepository <Partida, Long>{
     List<Partida> findByClubeCasa(String clubeCasa);
     List<Partida> findByClubeVisitante(String clubeVisitante);
     List<Partida> findByClubeCasaOrClubeVisitante(String clubeCasa, String clubeVisitante);
-    @Query("SELECT count(id) FROM Partida " +
+    @Query("SELECT count(id) > 0 FROM Partida " +
             "WHERE (FUNCTION('TIMEDIFF', dataDaPartida, :dataNovaPartida) between -480000 and 480000)" +
             "AND (clubeCasa = :clubeNovo or clubeVisitante = :clubeNovo)")
-    Integer checkClubeporDia(@Param("dataNovaPartida")LocalDateTime dataDaPartida,
+    Boolean checkClubeporDia(@Param("dataNovaPartida")LocalDateTime dataDaPartida,
                              @Param("clubeNovo") String clube);
 }
