@@ -19,4 +19,18 @@ public interface PartidaRepository extends JpaRepository <Partida, Long>{
             "AND (clubeCasa = :clubeNovo or clubeVisitante = :clubeNovo)")
     Boolean checkClubeporDia(@Param("dataNovaPartida")LocalDateTime dataDaPartida,
                              @Param("clubeNovo") String clube);
+    @Query("SELECT FUNCTION('SUM', (golsTimeCasa > golsTimeVisitante)) as vitorias, " +
+            "FUNCTION('SUM', (golsTimeCasa = golsTimeVisitante)) as empates," +
+            "FUNCTION('SUM', (golsTimeCasa < golsTimeVisitante)) as derrotas," +
+            "FUNCTION('SUM', (golsTimeCasa)) as golsPro, FUNCTION('SUM', (golsTimeVisitante)) as golsContra " +
+            "FROM Partida " +
+            "WHERE clubeCasa = :clubeCasa ")
+    RetrospectivaDTO getRetrospectivaClubeCasa(@Param("clubeCasa")String clubeCasa);
+    @Query("SELECT FUNCTION('SUM', (golsTimeVisitante > golsTimeCasa)) as vitorias, " +
+            "FUNCTION('SUM', (golsTimeVisitante = golsTimeCasa)) as empates," +
+            "FUNCTION('SUM', (golsTimeVisitante < golsTimeCasa)) as derrotas," +
+            "FUNCTION('SUM', (golsTimeVisitante)) as golsPro, FUNCTION('SUM', (golsTimeCasa)) as golsContra " +
+            "FROM Partida " +
+            "WHERE clubeVisitante = :clubeVisitante ")
+    RetrospectivaDTO getRetrospectivaClubeVisitante(@Param("clubeVisitante")String clubeVisitante);
 }
