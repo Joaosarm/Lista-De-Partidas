@@ -2,6 +2,7 @@ package br.com.joaosarmento.listadepartidasapi.services;
 
 import br.com.joaosarmento.listadepartidasapi.DTOs.PartidaDTO;
 import br.com.joaosarmento.listadepartidasapi.DTOs.ClubeDTO;
+import br.com.joaosarmento.listadepartidasapi.DTOs.RetrospectivaDTO;
 import br.com.joaosarmento.listadepartidasapi.models.Partida;
 import br.com.joaosarmento.listadepartidasapi.repositories.PartidaRepository;
 import org.modelmapper.ModelMapper;
@@ -101,6 +102,28 @@ public class PartidaService {
 
     public List<Partida> getPartidasComClubeVisitante(ClubeDTO clubeDTOVisitante){
         return partidaRepository.findByClubeVisitante(clubeDTOVisitante.getClube());
+    }
+
+    public RetrospectivaDTO getRetrospectivaGeralClubeCasa(ClubeDTO clubeDTOCasa){
+        List <Partida> partidasClubeCasa= getPartidasComClubeCasa(clubeDTOCasa);
+        Long vitoriasCasa = partidasClubeCasa.stream().filter(partida -> partida.getGolsTimeCasa() > partida.getGolsTimeVisitante()).count();
+        Long derrotasCasa = partidasClubeCasa.stream().filter(partida -> partida.getGolsTimeCasa() < partida.getGolsTimeVisitante()).count();
+        Long empatesCasa = partidasClubeCasa.stream().filter(partida -> partida.getGolsTimeCasa() == partida.getGolsTimeVisitante()).count();
+        int golsProCasa = partidasClubeCasa.stream().mapToInt(Partida::getGolsTimeCasa).reduce(0, Integer::sum);
+        int golsContraCasa = partidasClubeCasa.stream().mapToInt(Partida::getGolsTimeVisitante).reduce(0, Integer::sum);
+
+        return new RetrospectivaDTO(vitoriasCasa, derrotasCasa, empatesCasa, golsProCasa, golsContraCasa);
+    }
+
+    public RetrospectivaDTO getRetrospectivaGeralClubeVisitante(ClubeDTO clubeDTOCasa){
+        List <Partida> partidasClubeVisitante= getPartidasComClubeVisitante(clubeDTOCasa);
+        Long vitoriasVisitante = partidasClubeVisitante.stream().filter(partida -> partida.getGolsTimeVisitante() > partida.getGolsTimeCasa()).count();
+        Long derrotasVisitante = partidasClubeVisitante.stream().filter(partida -> partida.getGolsTimeVisitante() < partida.getGolsTimeCasa()).count();
+        Long empatesVisitante = partidasClubeVisitante.stream().filter(partida ->  partida.getGolsTimeVisitante() == partida.getGolsTimeCasa()).count();
+        int golsProVisitante= partidasClubeVisitante.stream().mapToInt(Partida::getGolsTimeVisitante).reduce(0, Integer::sum);
+        int golsContraVisitante = partidasClubeVisitante.stream().mapToInt(Partida::getGolsTimeCasa).reduce(0, Integer::sum);
+
+        return new RetrospectivaDTO(vitoriasVisitante, derrotasVisitante, empatesVisitante, golsProVisitante, golsContraVisitante);
     }
 
     public String updatePartida(Long id, PartidaDTO partidaDTO){

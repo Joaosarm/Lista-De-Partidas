@@ -3,6 +3,7 @@ package br.com.joaosarmento.listadepartidasapi.controllers;
 import br.com.joaosarmento.listadepartidasapi.DTOs.PartidaDTO;
 import br.com.joaosarmento.listadepartidasapi.DTOs.ClubeDTO;
 import br.com.joaosarmento.listadepartidasapi.DTOs.EstadioDTO;
+import br.com.joaosarmento.listadepartidasapi.DTOs.RetrospectivaDTO;
 import br.com.joaosarmento.listadepartidasapi.models.Partida;
 import br.com.joaosarmento.listadepartidasapi.services.PartidaService;
 import jakarta.validation.Valid;
@@ -22,6 +23,11 @@ public class PartidaController {
     @PostMapping
     public String postPartida(@Valid @RequestBody PartidaDTO partidaDTO){
         return partidaService.postPartida(partidaDTO);
+    }
+
+    @GetMapping("/teste")
+    public RetrospectivaDTO getRetrospectoGeralClubeCasa(@RequestBody ClubeDTO clubeDTO){
+        return partidaService.getRetrospectivaGeralClubeCasa(clubeDTO);
     }
 
     @GetMapping

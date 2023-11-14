@@ -1,5 +1,6 @@
 package br.com.joaosarmento.listadepartidasapi.repositories;
 
+import br.com.joaosarmento.listadepartidasapi.DTOs.RetrospectivaDTO;
 import br.com.joaosarmento.listadepartidasapi.models.Partida;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
