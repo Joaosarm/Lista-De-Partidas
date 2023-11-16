@@ -1,9 +1,6 @@
 package br.com.joaosarmento.listadepartidasapi.services;
 
-import br.com.joaosarmento.listadepartidasapi.DTOs.ManipulateRestrospectivaDTO;
-import br.com.joaosarmento.listadepartidasapi.DTOs.PartidaDTO;
-import br.com.joaosarmento.listadepartidasapi.DTOs.ClubeDTO;
-import br.com.joaosarmento.listadepartidasapi.DTOs.RetrospectivaDTO;
+import br.com.joaosarmento.listadepartidasapi.DTOs.*;
 import br.com.joaosarmento.listadepartidasapi.models.Partida;
 import br.com.joaosarmento.listadepartidasapi.repositories.PartidaRepository;
 import org.modelmapper.ModelMapper;
@@ -13,7 +10,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -25,7 +21,7 @@ public class PartidaService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public boolean validarId(Long id){
+    public boolean validateId(Long id){
         return !partidaRepository.existsById(id);
     }
     public boolean validateHorarioPartida(LocalDateTime dataDaPartida){
@@ -46,9 +42,9 @@ public class PartidaService {
         return partidaRepository.checkClubeporDia(dataDaPartida,clube);
     }
 
-    public ManipulateRestrospectivaDTO checkIfNull(RetrospectivaDTO retrospectiva){
-        if(retrospectiva.getVitorias() == null) return new ManipulateRestrospectivaDTO();
-        return new ManipulateRestrospectivaDTO(retrospectiva);
+    public RestrospectivaDTO checkIfRestrospectivaIsNull(Retrospectiva retrospectiva){
+        if(retrospectiva.getVitorias() == null) return new RestrospectivaDTO();
+        return new RestrospectivaDTO(retrospectiva);
     }
 
     public String postAndPutValidations(PartidaDTO partidaDTO){
@@ -114,25 +110,38 @@ public class PartidaService {
         return partidaRepository.findByClubeVisitante(clubeDTOVisitante.getClube());
     }
 
-    public ManipulateRestrospectivaDTO getRetrospectivaGeralClubeCasa(ClubeDTO clubeDTOCasa){
-        return checkIfNull(partidaRepository.getRetrospectivaClubeCasa(clubeDTOCasa.getClube()));
+    public RestrospectivaDTO getRetrospectivaGeralClubeCasa(ClubeDTO clubeDTOCasa){
+        return checkIfRestrospectivaIsNull(partidaRepository.getRetrospectivaClubeCasa(clubeDTOCasa.getClube()));
     }
 
-    public ManipulateRestrospectivaDTO getRetrospectivaGeralClubeVisitante(ClubeDTO clubeDTOVisitante){
-        return checkIfNull(partidaRepository.getRetrospectivaClubeVisitante(clubeDTOVisitante.getClube()));
+    public RestrospectivaDTO getRetrospectivaGeralClubeVisitante(ClubeDTO clubeDTOVisitante){
+        return checkIfRestrospectivaIsNull(partidaRepository.getRetrospectivaClubeVisitante(clubeDTOVisitante.getClube()));
     }
 
-    public ManipulateRestrospectivaDTO getRetrospectivaGeralClube(ClubeDTO clubeDTOCasa){
-        ManipulateRestrospectivaDTO retrospectivaComoCasa = getRetrospectivaGeralClubeCasa(clubeDTOCasa);
-        ManipulateRestrospectivaDTO retrospectivaComoVisitante = getRetrospectivaGeralClubeVisitante(clubeDTOCasa);
+    public RestrospectivaDTO getRetrospectivaGeralClube(ClubeDTO clubeDTOCasa){
+        RestrospectivaDTO retrospectivaComoCasa = getRetrospectivaGeralClubeCasa(clubeDTOCasa);
+        RestrospectivaDTO retrospectivaComoVisitante = getRetrospectivaGeralClubeVisitante(clubeDTOCasa);
 
-        return new ManipulateRestrospectivaDTO(retrospectivaComoCasa, retrospectivaComoVisitante);
+        return new RestrospectivaDTO().MergeRetrospectivasPorClube(retrospectivaComoCasa, retrospectivaComoVisitante);
+    }
+
+    public RetrospectivaPorConfrontoDTO getRetrospectivaConfronto(ConfrontoDTO confrontoDTO) {
+        RestrospectivaDTO retrospectivaPrimeiroClubeComoCasa = checkIfRestrospectivaIsNull(
+                partidaRepository.getRetrospectivaConfronto(confrontoDTO.getPrimeiroClube(), confrontoDTO.getSegundoClube()));
+        RestrospectivaDTO retrospectivaSegundoClubeComoCasa = checkIfRestrospectivaIsNull(
+                partidaRepository.getRetrospectivaConfronto(confrontoDTO.getSegundoClube(), confrontoDTO.getPrimeiroClube()));
+
+        return switch (confrontoDTO.getClubeMandante()) {
+            case "1" -> new RetrospectivaPorConfrontoDTO().RetrospectivaPrimeiroClube(retrospectivaPrimeiroClubeComoCasa);
+            case "2" -> new RetrospectivaPorConfrontoDTO().RetrospectivaSegundoClube(retrospectivaSegundoClubeComoCasa);
+            case null, default -> new RetrospectivaPorConfrontoDTO().MergeRetrospectivasConfronto(retrospectivaPrimeiroClubeComoCasa, retrospectivaSegundoClubeComoCasa);
+        };
     }
 
     public String updatePartida(Long id, PartidaDTO partidaDTO){
         String valido = postAndPutValidations(partidaDTO);
 
-        if(validarId(id)) return "Partida não encontrado!";
+        if(validateId(id)) return "Partida não encontrado!";
         if (!valido.equals("Validado")) return valido;
 
         Partida partida = modelMapper.map(partidaDTO, Partida.class);
@@ -145,5 +154,4 @@ public class PartidaService {
     public void deletePartida(Long id){
         partidaRepository.deleteById(id);
     }
-
 }

@@ -1,6 +1,6 @@
 package br.com.joaosarmento.listadepartidasapi.DTOs;
 
-public interface RetrospectivaDTO {
+public interface Retrospectiva {
      Integer getVitorias();
      Integer getDerrotas();
      Integer getEmpates();

@@ -1,16 +1,16 @@
 package br.com.joaosarmento.listadepartidasapi.DTOs;
 
-import java.util.Optional;
+import lombok.Getter;
 
-public class ManipulateRestrospectivaDTO {
-
+@Getter
+public class RestrospectivaDTO {
     private Integer vitorias;
     private Integer derrotas;
     private Integer empates;
     private Integer golsPro;
     private Integer golsContra;
 
-    public ManipulateRestrospectivaDTO(){
+    public RestrospectivaDTO(){
         this.vitorias = 0;
         this.derrotas = 0;
         this.empates = 0;
@@ -18,7 +18,7 @@ public class ManipulateRestrospectivaDTO {
         this.golsContra = 0;
     }
 
-    public ManipulateRestrospectivaDTO(RetrospectivaDTO retrospectivaCasa){
+    public RestrospectivaDTO(Retrospectiva retrospectivaCasa){
             this.vitorias = retrospectivaCasa.getVitorias();
             this.derrotas = retrospectivaCasa.getDerrotas();
             this.empates = retrospectivaCasa.getEmpates();
@@ -26,32 +26,13 @@ public class ManipulateRestrospectivaDTO {
             this.golsContra = retrospectivaCasa.getGolsContra();
     }
 
-    public ManipulateRestrospectivaDTO(ManipulateRestrospectivaDTO retrospectivaCasa, ManipulateRestrospectivaDTO retrospectivaVisitante){
+    public RestrospectivaDTO MergeRetrospectivasPorClube(RestrospectivaDTO retrospectivaCasa, RestrospectivaDTO retrospectivaVisitante){
         this.vitorias = retrospectivaCasa.getVitorias() + retrospectivaVisitante.getVitorias();
         this.derrotas = retrospectivaCasa.getDerrotas() + retrospectivaVisitante.getDerrotas();
         this.empates = retrospectivaCasa.getEmpates() + retrospectivaVisitante.getEmpates();
         this.golsPro = retrospectivaCasa.getGolsPro() + retrospectivaVisitante.getGolsPro();
         this.golsContra = retrospectivaCasa.getGolsContra() + retrospectivaVisitante.getGolsContra();
-    }
 
-
-    public int getVitorias() {
-        return vitorias;
-    }
-
-    public int getDerrotas() {
-        return derrotas;
-    }
-
-    public int getEmpates() {
-        return empates;
-    }
-
-    public int getGolsPro() {
-        return golsPro;
-    }
-
-    public int getGolsContra() {
-        return golsContra;
+        return this;
     }
 }

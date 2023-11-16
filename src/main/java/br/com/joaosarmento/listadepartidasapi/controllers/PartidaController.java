@@ -54,19 +54,24 @@ public class PartidaController {
     @GetMapping("/partidas-por-clube-visitante")
     public List<Partida> getPartidasComClubeVisitante(@RequestBody ClubeDTO clubeDTOVisitante){ return partidaService.getPartidasComClubeVisitante(clubeDTOVisitante); }
 
-    @GetMapping("/retrospectiva-casa")
-    public ManipulateRestrospectivaDTO getRetrospectoGeralClubeCasa(@RequestBody ClubeDTO clubeDTO){
+    @GetMapping("/retrospectiva-clube-casa")
+    public RestrospectivaDTO getRetrospectivaGeralClubeCasa(@RequestBody ClubeDTO clubeDTO){
         return partidaService.getRetrospectivaGeralClubeCasa(clubeDTO);
     }
 
-    @GetMapping("/retrospectiva-visitante")
-    public ManipulateRestrospectivaDTO getRetrospectoGeralClubeVisitante(@RequestBody ClubeDTO clubeDTO){
+    @GetMapping("/retrospectiva-clube-visitante")
+    public RestrospectivaDTO getRetrospectivaGeralClubeVisitante(@RequestBody ClubeDTO clubeDTO){
         return partidaService.getRetrospectivaGeralClubeVisitante(clubeDTO);
     }
 
-    @GetMapping("/retrospectiva-geral")
-    public ManipulateRestrospectivaDTO getRetrospectoGeralClube(@RequestBody ClubeDTO clubeDTO){
+    @GetMapping("/retrospectiva-clube-geral")
+    public RestrospectivaDTO getRetrospectivaGeralClube(@RequestBody ClubeDTO clubeDTO){
         return partidaService.getRetrospectivaGeralClube(clubeDTO);
+    }
+
+    @GetMapping("/retrospectiva-confronto")
+    public RetrospectivaPorConfrontoDTO getRetrospectivaConfronto(@RequestBody ConfrontoDTO confrontoDTO){
+        return partidaService.getRetrospectivaConfronto(confrontoDTO);
     }
 
     @PutMapping("/{id}")
