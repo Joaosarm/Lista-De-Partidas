@@ -55,12 +55,12 @@ public class PartidaController {
     public List<Partida> getPartidasComClubeVisitante(@RequestBody ClubeDTO clubeDTOVisitante){ return partidaService.getPartidasComClubeVisitante(clubeDTOVisitante); }
 
     @GetMapping("/retrospectiva-casa")
-    public RetrospectivaDTO getRetrospectoGeralClubeCasa(@RequestBody ClubeDTO clubeDTO){
+    public ManipulateRestrospectivaDTO getRetrospectoGeralClubeCasa(@RequestBody ClubeDTO clubeDTO){
         return partidaService.getRetrospectivaGeralClubeCasa(clubeDTO);
     }
 
     @GetMapping("/retrospectiva-visitante")
-    public RetrospectivaDTO getRetrospectoGeralClubeVisitante(@RequestBody ClubeDTO clubeDTO){
+    public ManipulateRestrospectivaDTO getRetrospectoGeralClubeVisitante(@RequestBody ClubeDTO clubeDTO){
         return partidaService.getRetrospectivaGeralClubeVisitante(clubeDTO);
     }
 

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -24,6 +25,9 @@ public class PartidaService {
     @Autowired
     private ModelMapper modelMapper;
 
+    public boolean validarId(Long id){
+        return !partidaRepository.existsById(id);
+    }
     public boolean validateHorarioPartida(LocalDateTime dataDaPartida){
         LocalTime horaMinima = LocalTime.parse( "08:00:00" );
         LocalTime horaMaxima = LocalTime.parse( "22:00:00" );
@@ -42,6 +46,11 @@ public class PartidaService {
         return partidaRepository.checkClubeporDia(dataDaPartida,clube);
     }
 
+    public ManipulateRestrospectivaDTO checkIfNull(RetrospectivaDTO retrospectiva){
+        if(retrospectiva.getVitorias() == null) return new ManipulateRestrospectivaDTO();
+        return new ManipulateRestrospectivaDTO(retrospectiva);
+    }
+
     public String postAndPutValidations(PartidaDTO partidaDTO){
         if(validateHorarioPartida(partidaDTO.getDataDaPartida()))
             return "Horário Inválido!";
@@ -58,7 +67,7 @@ public class PartidaService {
     public String postPartida(PartidaDTO partidaDto){
         String valido = postAndPutValidations(partidaDto);
 
-        if ( valido != "Validado") return valido;
+        if (!valido.equals("Validado")) return valido;
 
         partidaRepository.save(modelMapper.map(partidaDto, Partida.class));
         return "Partida Inserida!";
@@ -105,17 +114,17 @@ public class PartidaService {
         return partidaRepository.findByClubeVisitante(clubeDTOVisitante.getClube());
     }
 
-    public RetrospectivaDTO getRetrospectivaGeralClubeCasa(ClubeDTO clubeDTOCasa){
-        return partidaRepository.getRetrospectivaClubeCasa(clubeDTOCasa.getClube());
+    public ManipulateRestrospectivaDTO getRetrospectivaGeralClubeCasa(ClubeDTO clubeDTOCasa){
+        return checkIfNull(partidaRepository.getRetrospectivaClubeCasa(clubeDTOCasa.getClube()));
     }
 
-    public RetrospectivaDTO getRetrospectivaGeralClubeVisitante(ClubeDTO clubeDTOCasa){
-        return partidaRepository.getRetrospectivaClubeVisitante(clubeDTOCasa.getClube());
+    public ManipulateRestrospectivaDTO getRetrospectivaGeralClubeVisitante(ClubeDTO clubeDTOVisitante){
+        return checkIfNull(partidaRepository.getRetrospectivaClubeVisitante(clubeDTOVisitante.getClube()));
     }
 
     public ManipulateRestrospectivaDTO getRetrospectivaGeralClube(ClubeDTO clubeDTOCasa){
-        RetrospectivaDTO retrospectivaComoCasa = getRetrospectivaGeralClubeCasa(clubeDTOCasa);
-        RetrospectivaDTO retrospectivaComoVisitante = getRetrospectivaGeralClubeVisitante(clubeDTOCasa);
+        ManipulateRestrospectivaDTO retrospectivaComoCasa = getRetrospectivaGeralClubeCasa(clubeDTOCasa);
+        ManipulateRestrospectivaDTO retrospectivaComoVisitante = getRetrospectivaGeralClubeVisitante(clubeDTOCasa);
 
         return new ManipulateRestrospectivaDTO(retrospectivaComoCasa, retrospectivaComoVisitante);
     }
@@ -123,8 +132,8 @@ public class PartidaService {
     public String updatePartida(Long id, PartidaDTO partidaDTO){
         String valido = postAndPutValidations(partidaDTO);
 
-        if(!partidaRepository.existsById(id)) return "Partida não encontrado!";
-        if ( valido != "Validado") return valido;
+        if(validarId(id)) return "Partida não encontrado!";
+        if (!valido.equals("Validado")) return valido;
 
         Partida partida = modelMapper.map(partidaDTO, Partida.class);
         partida.setId(id);

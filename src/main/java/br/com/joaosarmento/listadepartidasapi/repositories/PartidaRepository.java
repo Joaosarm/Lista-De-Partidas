@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface PartidaRepository extends JpaRepository <Partida, Long>{
     List<Partida> findByEstadioDaPartida(String estadioDaPartida);
