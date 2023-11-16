@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 
 public class PartidaDTO {
 
-    private long id;
     @NotBlank(message = "clubeCasa não pode estar em branco!")
     private String clubeCasa;
     @NotBlank(message = "clubeVisitante não pode estar em branco")
@@ -21,14 +20,6 @@ public class PartidaDTO {
     private LocalDateTime dataDaPartida;
     @NotBlank(message = "estadioDaPartida não pode estar em branco")
     private String estadioDaPartida;
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public String getClubeCasa() {
         return clubeCasa;

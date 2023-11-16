@@ -4,7 +4,6 @@ import br.com.joaosarmento.listadepartidasapi.DTOs.PartidaDTO;
 import br.com.joaosarmento.listadepartidasapi.DTOs.ClubeDTO;
 import br.com.joaosarmento.listadepartidasapi.DTOs.EstadioDTO;
 import br.com.joaosarmento.listadepartidasapi.models.Partida;
-import br.com.joaosarmento.listadepartidasapi.DTOs.UpdateFormDTO;
 import br.com.joaosarmento.listadepartidasapi.services.PartidaService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +20,8 @@ public class PartidaController {
     private PartidaService partidaService;
 
     @PostMapping
-    public void postPartida(@Valid @RequestBody PartidaDTO partidaDTO){
-        partidaService.postPartida(partidaDTO);
+    public String postPartida(@Valid @RequestBody PartidaDTO partidaDTO){
+        return partidaService.postPartida(partidaDTO);
     }
 
     @GetMapping
@@ -36,7 +35,7 @@ public class PartidaController {
     }
 
     @GetMapping("/estadio")
-    public List<Partida> getPartidaPorEstadio(@RequestBody EstadioDTO estadioDaPartida){ return partidaService.getPartidaPorEstadio(estadioDaPartida); }
+    public List<Partida> getPartidaPorEstadio(@RequestBody EstadioDTO estadioDaPartida){ return partidaService.getPartidaPorEstadio(estadioDaPartida.getEstadioDaPartida()); }
 
     @GetMapping("/partidas-com-goleadas")
     public List<Partida> getPartidasComGoleadas(){
@@ -58,7 +57,7 @@ public class PartidaController {
     public List<Partida> getPartidasComClubeVisitante(@RequestBody ClubeDTO clubeDTOVisitante){ return partidaService.getPartidasComClubeVisitante(clubeDTOVisitante); }
 
     @PutMapping("/{id}")
-    public String updatePartida(@PathVariable Long id, @Valid @RequestBody UpdateFormDTO form){ return partidaService.updatePartida(id, form); }
+    public String updatePartida(@PathVariable Long id, @Valid @RequestBody PartidaDTO partidaDTO){ return partidaService.updatePartida(id, partidaDTO); }
 
     @DeleteMapping("/{id}")
     public void deletePartida(@PathVariable Long id){
