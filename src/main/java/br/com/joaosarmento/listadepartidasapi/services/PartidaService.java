@@ -9,9 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class PartidaService {
@@ -154,7 +152,7 @@ public class PartidaService {
         return clubesAdversarios;
     }
 
-    public List<ListaDeFreguesesDTO> getListaDeFregueses(ClubeDTO clubeDTO){
+    public List<ListaDeFreguesesDTO> getListaDeFreguesesPositivos(ClubeDTO clubeDTO){
         List<String> clubesAdversarios = getNomeClubesAdversarios(clubeDTO);
         List<ListaDeFreguesesDTO> listaDeFregueses = new ArrayList<>();
 
@@ -163,9 +161,18 @@ public class PartidaService {
             int quantidadeVitorias = retrospectivaAdversario.getVitoriasPrimeiroTime();
             int quantidadeDerrotas = retrospectivaAdversario.getVitoriasSegundoTime();
             int quantidadeEmpates = retrospectivaAdversario.getEmpates();
+
             if(quantidadeVitorias > quantidadeDerrotas) listaDeFregueses.add(new ListaDeFreguesesDTO(clube, quantidadeVitorias, quantidadeDerrotas, quantidadeEmpates));
         });
 
+        return listaDeFregueses;
+    }
+
+    public List<ListaDeFreguesesDTO> getTop5ListaDeFregueses(ClubeDTO clubeDTO){
+        List<ListaDeFreguesesDTO> listaDeFregueses = getListaDeFreguesesPositivos(clubeDTO);
+        listaDeFregueses.sort(new ListaDeFreguesesComparator());
+
+        if(listaDeFregueses.size() > 5) return listaDeFregueses.subList(0,5);
         return listaDeFregueses;
     }
 

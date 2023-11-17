@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.util.Comparator;
 
 @Getter
-public class ListaDeFreguesesDTO {
+public class ListaDeFreguesesDTO{
     private String clubeFregues;
     private Integer quantidadePartidas;
     private Integer quantidadeVitorias;

@@ -76,7 +76,7 @@ public class PartidaController {
 
     @GetMapping("/lista-fregueses")
     public List<ListaDeFreguesesDTO> getListaDeFregueses(@RequestBody ClubeDTO clubeDTO){
-        return partidaService.getListaDeFregueses(clubeDTO);
+        return partidaService.getTop5ListaDeFregueses(clubeDTO);
     }
 
     @PutMapping("/{id}")
