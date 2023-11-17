@@ -74,6 +74,11 @@ public class PartidaController {
         return partidaService.getRetrospectivaConfronto(confrontoDTO);
     }
 
+    @GetMapping("/lista-fregueses")
+    public List<ListaDeFreguesesDTO> getListaDeFregueses(@RequestBody ClubeDTO clubeDTO){
+        return partidaService.getListaDeFregueses(clubeDTO);
+    }
+
     @PutMapping("/{id}")
     public String updatePartida(@PathVariable Long id, @Valid @RequestBody PartidaDTO partidaDTO){ return partidaService.updatePartida(id, partidaDTO); }
 

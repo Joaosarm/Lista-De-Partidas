@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -136,6 +137,36 @@ public class PartidaService {
             case "2" -> new RetrospectivaPorConfrontoDTO().RetrospectivaSegundoClube(retrospectivaSegundoClubeComoCasa);
             case null, default -> new RetrospectivaPorConfrontoDTO().MergeRetrospectivasConfronto(retrospectivaPrimeiroClubeComoCasa, retrospectivaSegundoClubeComoCasa);
         };
+    }
+
+    public List<String> getNomeClubesAdversarios(ClubeDTO clubeDTO){
+        List<String> clubesAdversarios = new ArrayList<>();
+        String clubeASerChecado = clubeDTO.getClube();
+
+        getPartidasComClube(clubeDTO).forEach(partida ->{
+            String clubeCasa = partida.getClubeCasa();
+            String clubeVisitante = partida.getClubeVisitante();
+
+            if(!clubeCasa.equals(clubeASerChecado) && !clubesAdversarios.contains(clubeCasa)) clubesAdversarios.add(clubeCasa);
+            else if(!clubeVisitante.equals(clubeASerChecado) && !clubesAdversarios.contains(clubeVisitante)) clubesAdversarios.add(clubeVisitante);
+        });
+
+        return clubesAdversarios;
+    }
+
+    public List<ListaDeFreguesesDTO> getListaDeFregueses(ClubeDTO clubeDTO){
+        List<String> clubesAdversarios = getNomeClubesAdversarios(clubeDTO);
+        List<ListaDeFreguesesDTO> listaDeFregueses = new ArrayList<>();
+
+        clubesAdversarios.forEach(clube ->{
+            RetrospectivaPorConfrontoDTO retrospectivaAdversario = getRetrospectivaConfronto(new ConfrontoDTO(clubeDTO.getClube(), clube));
+            int quantidadeVitorias = retrospectivaAdversario.getVitoriasPrimeiroTime();
+            int quantidadeDerrotas = retrospectivaAdversario.getVitoriasSegundoTime();
+            int quantidadeEmpates = retrospectivaAdversario.getEmpates();
+            if(quantidadeVitorias > quantidadeDerrotas) listaDeFregueses.add(new ListaDeFreguesesDTO(clube, quantidadeVitorias, quantidadeDerrotas, quantidadeEmpates));
+        });
+
+        return listaDeFregueses;
     }
 
     public String updatePartida(Long id, PartidaDTO partidaDTO){

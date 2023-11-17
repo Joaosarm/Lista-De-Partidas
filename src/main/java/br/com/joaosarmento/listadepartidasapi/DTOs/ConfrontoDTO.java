@@ -5,6 +5,11 @@ public class ConfrontoDTO {
     private String segundoClube;
     private String clubeMandante;
 
+    public ConfrontoDTO(String primeiroClube, String segundoClube){
+        this.primeiroClube = primeiroClube;
+        this.segundoClube = segundoClube;
+    }
+
     public String getPrimeiroClube() {
         return primeiroClube;
     }
