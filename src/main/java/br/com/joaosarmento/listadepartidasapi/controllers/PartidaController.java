@@ -1,8 +1,6 @@
 package br.com.joaosarmento.listadepartidasapi.controllers;
 
-import br.com.joaosarmento.listadepartidasapi.DTOs.PartidaDTO;
-import br.com.joaosarmento.listadepartidasapi.DTOs.ClubeDTO;
-import br.com.joaosarmento.listadepartidasapi.DTOs.EstadioDTO;
+import br.com.joaosarmento.listadepartidasapi.DTOs.*;
 import br.com.joaosarmento.listadepartidasapi.models.Partida;
 import br.com.joaosarmento.listadepartidasapi.services.PartidaService;
 import jakarta.validation.Valid;
@@ -55,6 +53,31 @@ public class PartidaController {
 
     @GetMapping("/partidas-por-clube-visitante")
     public List<Partida> getPartidasComClubeVisitante(@RequestBody ClubeDTO clubeDTOVisitante){ return partidaService.getPartidasComClubeVisitante(clubeDTOVisitante); }
+
+    @GetMapping("/retrospectiva-clube-casa")
+    public RestrospectivaDTO getRetrospectivaGeralClubeCasa(@RequestBody ClubeDTO clubeDTO){
+        return partidaService.getRetrospectivaGeralClubeCasa(clubeDTO);
+    }
+
+    @GetMapping("/retrospectiva-clube-visitante")
+    public RestrospectivaDTO getRetrospectivaGeralClubeVisitante(@RequestBody ClubeDTO clubeDTO){
+        return partidaService.getRetrospectivaGeralClubeVisitante(clubeDTO);
+    }
+
+    @GetMapping("/retrospectiva-clube-geral")
+    public RestrospectivaDTO getRetrospectivaGeralClube(@RequestBody ClubeDTO clubeDTO){
+        return partidaService.getRetrospectivaGeralClube(clubeDTO);
+    }
+
+    @GetMapping("/retrospectiva-confronto")
+    public RetrospectivaPorConfrontoDTO getRetrospectivaConfronto(@RequestBody ConfrontoDTO confrontoDTO){
+        return partidaService.getRetrospectivaConfronto(confrontoDTO);
+    }
+
+    @GetMapping("/lista-fregueses")
+    public List<ListaDeFreguesesDTO> getListaDeFregueses(@RequestBody ClubeDTO clubeDTO){
+        return partidaService.getTop5ListaDeFregueses(clubeDTO);
+    }
 
     @PutMapping("/{id}")
     public String updatePartida(@PathVariable Long id, @Valid @RequestBody PartidaDTO partidaDTO){ return partidaService.updatePartida(id, partidaDTO); }
