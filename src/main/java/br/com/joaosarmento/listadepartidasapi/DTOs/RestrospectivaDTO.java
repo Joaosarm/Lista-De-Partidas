@@ -26,7 +26,7 @@ public class RestrospectivaDTO {
             this.golsContra = retrospectivaCasa.getGolsContra();
     }
 
-    public RestrospectivaDTO MergeRetrospectivasPorClube(RestrospectivaDTO retrospectivaCasa, RestrospectivaDTO retrospectivaVisitante){
+    public RestrospectivaDTO mergeRetrospectivasPorClube(RestrospectivaDTO retrospectivaCasa, RestrospectivaDTO retrospectivaVisitante){
         this.vitorias = retrospectivaCasa.getVitorias() + retrospectivaVisitante.getVitorias();
         this.derrotas = retrospectivaCasa.getDerrotas() + retrospectivaVisitante.getDerrotas();
         this.empates = retrospectivaCasa.getEmpates() + retrospectivaVisitante.getEmpates();

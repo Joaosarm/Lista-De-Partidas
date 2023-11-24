@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping
@@ -18,7 +17,7 @@ public class PartidaController {
     private PartidaService partidaService;
 
     @PostMapping
-    public String postPartida(@Valid @RequestBody PartidaDTO partidaDTO){
+    public Partida postPartida(@Valid @RequestBody PartidaDTO partidaDTO){
         return partidaService.postPartida(partidaDTO);
     }
 
@@ -28,8 +27,8 @@ public class PartidaController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Partida> getUmaPartida(@PathVariable Long id){
-        return partidaService.getUmaPartida(id);
+    public Partida getUmaPartida(@PathVariable Long id){
+        return partidaService.getPartidaById(id);
     }
 
     @GetMapping("/estadio")
@@ -80,7 +79,7 @@ public class PartidaController {
     }
 
     @PutMapping("/{id}")
-    public String updatePartida(@PathVariable Long id, @Valid @RequestBody PartidaDTO partidaDTO){ return partidaService.updatePartida(id, partidaDTO); }
+    public PartidaDTO updatePartida(@PathVariable Long id, @Valid @RequestBody PartidaDTO partidaDTO){ return partidaService.updatePartida(id, partidaDTO); }
 
     @DeleteMapping("/{id}")
     public void deletePartida(@PathVariable Long id){
