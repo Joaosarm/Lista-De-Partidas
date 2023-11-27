@@ -22,8 +22,8 @@ public class PartidaController {
     }
 
     @GetMapping
-    public List<Partida> getTodasAsPartidas(){
-        return partidaService.getTodasAsPartidas();
+    public List<Partida> getAll(){
+        return partidaService.getAll();
     }
 
     @GetMapping("/{id}")

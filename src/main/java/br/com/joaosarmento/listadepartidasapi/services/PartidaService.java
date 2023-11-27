@@ -45,12 +45,12 @@ public class PartidaService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Um dos clubes ja tem um jogo com menos de 2 dias de diferença!");
     }
 
-    public RestrospectivaDTO checkIfRestrospectivaIsNull(Retrospectiva retrospectiva){
+    private RestrospectivaDTO checkIfRestrospectivaIsNull(Retrospectiva retrospectiva){
         if(retrospectiva.getVitorias() == null) return new RestrospectivaDTO();
         return new RestrospectivaDTO(retrospectiva);
     }
 
-    public void postAndPutValidations(PartidaDTO partidaDTO){
+    private void postAndPutValidations(PartidaDTO partidaDTO){
         validateHorarioPartida(partidaDTO.getDataDaPartida());
         validateEstadioNoDia(partidaDTO.getEstadioDaPartida(), partidaDTO.getDataDaPartida());
         validateClubePorIntervaloDeTempo(partidaDTO);
@@ -64,12 +64,12 @@ public class PartidaService {
         return partida;
     }
 
-    public List<Partida> getTodasAsPartidas(){
+    public List<Partida> getAll(){
         return partidaRepository.findAll();
     }
 
     public Partida getPartidaById(Long id){
-        return partidaRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Id inexistente!"));
+        return partidaRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Id inexistente!"));
     }
 
     public List<Partida> getPartidaPorEstadio(String nomeDoEstadio){
@@ -77,7 +77,7 @@ public class PartidaService {
     }
 
     public List<Partida> getPartidasComGoleadas(){
-        return getTodasAsPartidas()
+        return getAll()
                 .stream()
                 .filter(partida -> {
                     int diferencaDeGols = partida.getGolsTimeCasa() - partida.getGolsTimeVisitante();
@@ -87,7 +87,7 @@ public class PartidaService {
     }
 
     public List<Partida> getPartidasSemGols(){
-        return getTodasAsPartidas()
+        return getAll()
                 .stream()
                 .filter(partida -> partida.getGolsTimeCasa()==0 && partida.getGolsTimeVisitante()==0)
                 .toList();
@@ -179,10 +179,11 @@ public class PartidaService {
         modelMapper.map(partidaDTO, partida);
         partidaRepository.save(partida);
 
-        return partidaDTO;
+        return modelMapper.map(partida, PartidaDTO.class);
     }
 
     public void deletePartida(Long id){
+        getPartidaById(id);
         partidaRepository.deleteById(id);
     }
 }
