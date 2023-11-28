@@ -5,7 +5,9 @@ import br.com.joaosarmento.listadepartidasapi.models.Partida;
 import br.com.joaosarmento.listadepartidasapi.repositories.PartidaRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -20,60 +22,54 @@ public class PartidaService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public boolean validateId(Long id){
-        return !partidaRepository.existsById(id);
-    }
-    public boolean validateHorarioPartida(LocalDateTime dataDaPartida){
+
+    private void validateHorarioPartida(LocalDateTime dataDaPartida){
         LocalTime horaMinima = LocalTime.parse( "08:00:00" );
         LocalTime horaMaxima = LocalTime.parse( "22:00:00" );
         LocalTime horaDaPartida = dataDaPartida.toLocalTime();
 
-        return horaDaPartida.isBefore(horaMinima) || horaDaPartida.isAfter(horaMaxima);
+        if(horaDaPartida.isBefore(horaMinima) || horaDaPartida.isAfter(horaMaxima))
+            throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Horário Inválido!");
     }
 
-    public boolean validateEstadioNoDia(String nomeDoEstadio, LocalDateTime DataDaPartida){
-        return getPartidaPorEstadio(nomeDoEstadio).stream().anyMatch(partida ->
+    private void validateEstadioNoDia(String nomeDoEstadio, LocalDateTime DataDaPartida){
+        boolean anyPartidaNoEstadioNoDia = getPartidaPorEstadio(nomeDoEstadio).stream().anyMatch(partida ->
             partida.getDataDaPartida().toLocalDate().isEqual(DataDaPartida.toLocalDate())
         );
+        if(anyPartidaNoEstadioNoDia)
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Jogo já existente para essa data nesse estádio!");
     }
 
-    public boolean validateClubePorIntervaloDeTempo(LocalDateTime dataDaPartida, String clube){
-        return partidaRepository.checkClubeporDia(dataDaPartida,clube);
+    private void validateClubePorIntervaloDeTempo(PartidaDTO partidaDTO){
+        if (partidaRepository.checkClubeporDia(partidaDTO.getDataDaPartida(),partidaDTO.getClubeCasa(),partidaDTO.getClubeVisitante()))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Um dos clubes ja tem um jogo com menos de 2 dias de diferença!");
     }
 
-    public RestrospectivaDTO checkIfRestrospectivaIsNull(Retrospectiva retrospectiva){
+    private RestrospectivaDTO checkIfRestrospectivaIsNull(Retrospectiva retrospectiva){
         if(retrospectiva.getVitorias() == null) return new RestrospectivaDTO();
         return new RestrospectivaDTO(retrospectiva);
     }
 
-    public String postAndPutValidations(PartidaDTO partidaDTO){
-        if(validateHorarioPartida(partidaDTO.getDataDaPartida()))
-            return "Horário Inválido!";
-        if(validateEstadioNoDia(partidaDTO.getEstadioDaPartida(), partidaDTO.getDataDaPartida()))
-            return "Jogo já existente para essa data nesse estádio!";
-        if(validateClubePorIntervaloDeTempo(partidaDTO.getDataDaPartida(), partidaDTO.getClubeCasa()))
-            return "Clube da casa ja tem um jogo com menos de 2 dias de diferença!";
-        if(validateClubePorIntervaloDeTempo(partidaDTO.getDataDaPartida(), partidaDTO.getClubeVisitante()))
-            return "Clube visitante ja tem um jogo com menos de 2 dias de diferença!";
-
-        return "Validado";
+    private void postAndPutValidations(PartidaDTO partidaDTO){
+        validateHorarioPartida(partidaDTO.getDataDaPartida());
+        validateEstadioNoDia(partidaDTO.getEstadioDaPartida(), partidaDTO.getDataDaPartida());
+        validateClubePorIntervaloDeTempo(partidaDTO);
     }
 
-    public String postPartida(PartidaDTO partidaDto){
-        String valido = postAndPutValidations(partidaDto);
+    public Partida postPartida(PartidaDTO partidaDto){
+        postAndPutValidations(partidaDto);
 
-        if (!valido.equals("Validado")) return valido;
-
-        partidaRepository.save(modelMapper.map(partidaDto, Partida.class));
-        return "Partida Inserida!";
+        Partida partida = modelMapper.map(partidaDto, Partida.class);
+        partidaRepository.save(partida);
+        return partida;
     }
 
-    public List<Partida> getTodasAsPartidas(){
+    public List<Partida> getAll(){
         return partidaRepository.findAll();
     }
 
-    public Optional<Partida> getUmaPartida(Long id){
-        return partidaRepository.findById(id);
+    public Partida getPartidaById(Long id){
+        return partidaRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Id inexistente!"));
     }
 
     public List<Partida> getPartidaPorEstadio(String nomeDoEstadio){
@@ -81,7 +77,7 @@ public class PartidaService {
     }
 
     public List<Partida> getPartidasComGoleadas(){
-        return getTodasAsPartidas()
+        return getAll()
                 .stream()
                 .filter(partida -> {
                     int diferencaDeGols = partida.getGolsTimeCasa() - partida.getGolsTimeVisitante();
@@ -91,7 +87,7 @@ public class PartidaService {
     }
 
     public List<Partida> getPartidasSemGols(){
-        return getTodasAsPartidas()
+        return getAll()
                 .stream()
                 .filter(partida -> partida.getGolsTimeCasa()==0 && partida.getGolsTimeVisitante()==0)
                 .toList();
@@ -110,18 +106,18 @@ public class PartidaService {
     }
 
     public RestrospectivaDTO getRetrospectivaGeralClubeCasa(ClubeDTO clubeDTOCasa){
-        return checkIfRestrospectivaIsNull(partidaRepository.getRetrospectivaClubeCasa(clubeDTOCasa.getClube()));
+        return checkIfRestrospectivaIsNull( partidaRepository.getRetrospectivaClubeCasa(clubeDTOCasa.getClube()) );
     }
 
     public RestrospectivaDTO getRetrospectivaGeralClubeVisitante(ClubeDTO clubeDTOVisitante){
-        return checkIfRestrospectivaIsNull(partidaRepository.getRetrospectivaClubeVisitante(clubeDTOVisitante.getClube()));
+        return checkIfRestrospectivaIsNull( partidaRepository.getRetrospectivaClubeVisitante(clubeDTOVisitante.getClube()) );
     }
 
     public RestrospectivaDTO getRetrospectivaGeralClube(ClubeDTO clubeDTOCasa){
         RestrospectivaDTO retrospectivaComoCasa = getRetrospectivaGeralClubeCasa(clubeDTOCasa);
         RestrospectivaDTO retrospectivaComoVisitante = getRetrospectivaGeralClubeVisitante(clubeDTOCasa);
 
-        return new RestrospectivaDTO().MergeRetrospectivasPorClube(retrospectivaComoCasa, retrospectivaComoVisitante);
+        return new RestrospectivaDTO().mergeRetrospectivasPorClube(retrospectivaComoCasa, retrospectivaComoVisitante);
     }
 
     public RetrospectivaPorConfrontoDTO getRetrospectivaConfronto(ConfrontoDTO confrontoDTO) {
@@ -176,20 +172,18 @@ public class PartidaService {
         return listaDeFregueses;
     }
 
-    public String updatePartida(Long id, PartidaDTO partidaDTO){
-        String valido = postAndPutValidations(partidaDTO);
+    public PartidaDTO updatePartida(Long id, PartidaDTO partidaDTO){
+        postAndPutValidations(partidaDTO);
+        Partida partida = getPartidaById(id);
 
-        if(validateId(id)) return "Partida não encontrado!";
-        if (!valido.equals("Validado")) return valido;
-
-        Partida partida = modelMapper.map(partidaDTO, Partida.class);
-        partida.setId(id);
+        modelMapper.map(partidaDTO, partida);
         partidaRepository.save(partida);
 
-        return "Atualizado!";
+        return modelMapper.map(partida, PartidaDTO.class);
     }
 
     public void deletePartida(Long id){
+        getPartidaById(id);
         partidaRepository.deleteById(id);
     }
 }
